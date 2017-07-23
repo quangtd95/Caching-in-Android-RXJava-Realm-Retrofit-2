@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Caching Realm_rxJava_Retrofit_2</string>
+    <string name="url_base">https://api.github.com</string>
+</resources>
