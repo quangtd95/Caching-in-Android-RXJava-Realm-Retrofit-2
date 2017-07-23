@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         initComponent();
         fetchDataCaching();
     }
+
     private void initComponent() {
         realmUI = Realm.getDefaultInstance();
         mRvIssue = (RecyclerView) findViewById(R.id.rvIssue);
@@ -64,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::display, this::processError);
     }
+
     private void fetchDataWithoutCaching() {
         Observable<List<IssueResponse>> observable = ApiClient.getService().getIssueList();
         observable
@@ -79,12 +81,13 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void processError(Throwable throwable) {
-        Toast.makeText(this, throwable.toString(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Check your network connection!!", Toast.LENGTH_SHORT).show();
         Log.e(throwable);
-        srLayout.setRefreshing(false);
+        if (srLayout.isRefreshing()) srLayout.setRefreshing(false);
     }
+
     private void display(List<IssueResponse> issueResponses) {
-        srLayout.setRefreshing(false);
+        if (srLayout.isRefreshing()) srLayout.setRefreshing(false);
         this.issueResponses.clear();
         for (int i = 0; i < issueResponses.size(); i++) {
             this.issueResponses.add(issueResponses.get(i));
@@ -95,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
     private IssueRealm findInDb(Realm realm, int id) {
         return realm.where(IssueRealm.class).equalTo("id", id).findFirst();
     }
+
     private List<IssueResponse> findAllInDB(Realm realm) {
         List<IssueRealm> issueRealms = realm.where(IssueRealm.class).findAll();
         List<IssueResponse> list = new ArrayList<>();
@@ -107,9 +111,11 @@ public class MainActivity extends AppCompatActivity {
         }
         return list;
     }
+
     private List<IssueResponse> readAllFromDB(List<IssueResponse> issueResponses) {
         return findAllInDB(Realm.getDefaultInstance());
     }
+
     private List<IssueResponse> writeToDB(List<IssueResponse> issueResponses) {
         Realm realm = Realm.getDefaultInstance();
         realm.executeTransaction(transactionRealm -> {
